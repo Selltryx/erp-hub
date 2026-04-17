@@ -7,6 +7,14 @@ app.get("/", (req, res) => {
   res.send("ERP HUB rodando 🚀");
 });
 
+app.get("/test", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "ERP HUB funcionando 🚀",
+    time: new Date().toISOString()
+  });
+});
+
 app.post("/webhook/order", (req, res) => {
   console.log("Pedido recebido:", req.body);
   res.json({ ok: true });
