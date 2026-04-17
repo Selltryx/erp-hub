@@ -17,6 +17,10 @@ export function updateStock(sku: string, quantity: number) {
   product.stockReal -= quantity;
 
   if (product.stockReal <= 0) {
+    product.stockReal = 0;
     product.stockVirtual = 0;
+  } else {
+    // mantém vitrine sempre fixa enquanto tiver estoque
+    product.stockVirtual = product.vitrineLimit;
   }
 }

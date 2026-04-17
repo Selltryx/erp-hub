@@ -3,5 +3,6 @@ export interface Product {
   name: string;
   stockReal: number;
   stockVirtual: number;
+  vitrineLimit: number;
   cost: number;
 }
