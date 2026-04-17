@@ -33,6 +33,20 @@ app.post("/order", (req, res) => {
   res.json({ message: "Pedido processado" });
 });
 
+app.post("/kit", (req, res) => {
+  addKit(req.body);
+  res.json({ message: "Kit cadastrado" });
+});
+
+app.get("/kits", (req, res) => {
+  const kits = getKits().map(kit => ({
+    ...kit,
+    stockReal: calculateKitStock(kit)
+  }));
+
+  res.json(kits);
+});
+
 app.post("/webhook/order", (req, res) => {
   console.log("Pedido recebido:", req.body);
   res.json({ ok: true });
