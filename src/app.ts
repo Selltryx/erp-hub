@@ -1,6 +1,7 @@
 import express from "express";
 import { processOrder } from "./services/orderService";
 import { addProduct, getProducts } from "./services/stockService";
+import { addKit, getKits, calculateKitStock } from "./services/kitService";
 
 const app = express();
 app.use(express.json());
@@ -18,6 +19,7 @@ app.get("/test", (req, res) => {
 });
 
 app.post("/product", (req, res) => {
+  console.log("BODY:", req.body);
   addProduct(req.body);
   res.json({ message: "Produto cadastrado" });
 });
