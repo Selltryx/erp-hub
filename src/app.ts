@@ -3,6 +3,7 @@ import { processOrder } from "./services/orderService";
 import { addProduct, getProducts } from "./services/stockService";
 import { addKit, getKits, calculateKitStock } from "./services/kitService";
 import { initDb } from "./config/initDb";
+import { pool } from "./config/database";
 
 initDb();
 const app = express();
