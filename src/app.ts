@@ -20,6 +20,21 @@ app.get("/test", (req, res) => {
   });
 });
 
+app.get("/db-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()");
+    res.json({
+      status: "Banco conectado",
+      time: result.rows[0]
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: "Erro na conexão com banco"
+    });
+  }
+});
+
 app.post("/product", async (req, res) => {
   await addProduct(req.body);
   res.json({ message: "Produto salvo no banco" });
