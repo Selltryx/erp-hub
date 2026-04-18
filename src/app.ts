@@ -41,8 +41,9 @@ app.post("/product", async (req, res) => {
   res.json({ message: "Produto salvo no banco" });
 });
 
-app.get("/product", (req, res) => {
-  res.json(getProducts());
+app.get("/products", async (req, res) => {
+  const products = await getProducts();
+  res.json(products);
 });
 
 app.post("/order", (req, res) => {
