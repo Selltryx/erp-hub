@@ -1,27 +1,25 @@
 import { Order } from "../models/order";
 import { updateStock, getProducts } from "./stockService";
 import { getKits } from "./kitService";
+import { findKitBySku } from "./kitService";
 
 let orders: Order[] = [];
 
 export function processOrder(order: Order) {
   orders.push(order);
 
-  const kits = getKits();
+  order.items.forEach(item => {
 
-  order.items.forEach(item => {    
-    const kit = kits.find(k => k.sku === item.sku);
+    const kit = findKitBySku(item.sku);
 
-    if (kit) {
+    if (kit) {      
       kit.items.forEach(kitItem => {
-        updateStock(kitItem.sku, kitItem.quantity * item.quantity);
+        const totalQty = kitItem.quantity * item.quantity;
+        updateStock(kitItem.sku, totalQty);
       });
-    } else {      
+    } else {    
       updateStock(item.sku, item.quantity);
     }
-  });
-}
 
-export function getOrders() {
-  return orders;
+  });
 }
