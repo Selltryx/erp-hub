@@ -2,7 +2,9 @@ import express from "express";
 import { processOrder } from "./services/orderService";
 import { addProduct, getProducts } from "./services/stockService";
 import { addKit, getKits, calculateKitStock } from "./services/kitService";
+import { initDb } from "./config/initDb";
 
+initDb();
 const app = express();
 app.use(express.json());
 
@@ -18,10 +20,9 @@ app.get("/test", (req, res) => {
   });
 });
 
-app.post("/product", (req, res) => {
-  console.log("BODY:", req.body);
-  addProduct(req.body);
-  res.json({ message: "Produto cadastrado" });
+app.post("/product", async (req, res) => {
+  await addProduct(req.body);
+  res.json({ message: "Produto salvo no banco" });
 });
 
 app.get("/product", (req, res) => {
