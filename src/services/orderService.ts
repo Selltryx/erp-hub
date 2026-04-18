@@ -1,25 +1,32 @@
-import { Order } from "../models/order";
-import { updateStock, getProducts } from "./stockService";
-import { getKits } from "./kitService";
+import { decreaseStock } from "./stockService";
 import { findKitBySku } from "./kitService";
 
-let orders: Order[] = [];
+type OrderItem = {
+  sku: string;
+  quantity: number;
+};
+
+type Order = {
+  items: OrderItem[];
+};
 
 export function processOrder(order: Order) {
-  orders.push(order);
+  if (!order.items || order.items.length === 0) {
+    throw new Error("Pedido sem itens");
+  }
 
-  kit.items.forEach((kitItem: any) => {
-
+  order.items.forEach((item) => {
     const kit = findKitBySku(item.sku);
 
-    if (kit) {      
-      kit.items.forEach(kitItem => {
-        const totalQty = kitItem.quantity * item.quantity;
-        updateStock(kitItem.sku, totalQty);
-      });
-    } else {    
-      updateStock(item.sku, item.quantity);
-    }
+        if (kit) {
+      kit.items.forEach((kitItem) => {
+        const totalQuantity = kitItem.quantity * item.quantity;
 
+        decreaseStock(kitItem.sku, totalQuantity);
+      });
+
+    } else {      
+      decreaseStock(item.sku, item.quantity);
+    }
   });
 }

@@ -1,26 +1,41 @@
-import { Product } from "../models/product";
+type Product = {
+  sku: string;
+  name: string;
+  stockReal: number;
+  stockVirtual: number;
+  cost: number;
+};
 
-let products: Product[] = [];
+const products: Product[] = [];
 
-export function addProduct(product: Product) {
+export async function addProduct(product: Product) {
+  const existing = products.find(p => p.sku === product.sku);
+
+  if (existing) {
+    throw new Error("Produto já existe");
+  }
+
   products.push(product);
 }
 
-export function getProducts() {
+export async function getProducts(): Promise<Product[]> {
   return products;
 }
 
-export function updateStock(sku: string, quantity: number) {
+export function decreaseStock(sku: string, quantity: number) {
   const product = products.find(p => p.sku === sku);
-  if (!product) return;
 
-  product.stockReal -= quantity;
+  if (!product) {
+    throw new Error(`Produto não encontrado: ${sku}`);
+  }
 
-  if (product.stockReal <= 0) {
-    product.stockReal = 0;
+  if (product.stockReal < quantity) {
+    throw new Error(`Estoque insuficiente para ${sku}`);
+  }
+
+   product.stockReal -= quantity;
+
+   if (product.stockReal <= 0) {
     product.stockVirtual = 0;
-  } else {
-    // mantém vitrine sempre fixa enquanto tiver estoque
-    product.stockVirtual = product.vitrineLimit;
   }
 }
