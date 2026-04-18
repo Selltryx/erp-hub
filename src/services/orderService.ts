@@ -8,7 +8,7 @@ let orders: Order[] = [];
 export function processOrder(order: Order) {
   orders.push(order);
 
-  order.items.forEach(item => {
+  kit.items.forEach((kitItem: any) => {
 
     const kit = findKitBySku(item.sku);
 
