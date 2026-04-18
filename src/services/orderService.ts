@@ -1,13 +1,24 @@
 import { Order } from "../models/order";
-import { updateStock } from "./stockService";
+import { updateStock, getProducts } from "./stockService";
+import { getKits } from "./kitService";
 
 let orders: Order[] = [];
 
 export function processOrder(order: Order) {
   orders.push(order);
 
-  order.items.forEach(item => {
-    updateStock(item.sku, item.quantity);
+  const kits = getKits();
+
+  order.items.forEach(item => {    
+    const kit = kits.find(k => k.sku === item.sku);
+
+    if (kit) {
+      kit.items.forEach(kitItem => {
+        updateStock(kitItem.sku, kitItem.quantity * item.quantity);
+      });
+    } else {      
+      updateStock(item.sku, item.quantity);
+    }
   });
 }
 
