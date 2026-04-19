@@ -57,18 +57,26 @@ app.get("/order", (req, res) => {
   });
 });
 
-app.post("/kit", (req, res) => {
-  addKit(req.body);
+app.post("/kit", async (req, res) => {
+  await addKit(req.body);
   res.json({ message: "Kit cadastrado" });
 });
 
-app.get("/kits", (req, res) => {
-  const kits = getKits().map(kit => ({
-    ...kit,
-    stockReal: calculateKitStock(kit)
-  }));
+app.get("/kits", async (req, res) => {
+  const kits = await getKits();
 
-  res.json(kits);
+  const result = [];
+
+  for (const kit of kits) {
+    const stock = await calculateKitStock(kit.sku);
+
+    result.push({
+      ...kit,
+      stockReal: stock
+    });
+  }
+
+  res.json(result);
 });
 
 app.post("/webhook/order", (req, res) => {

@@ -1,41 +1,58 @@
-type Product = {
-  sku: string;
-  name: string;
-  stockReal: number;
-  stockVirtual: number;
-  cost: number;
-};
-
-const products: Product[] = [];
+import { pool } from "../config/database";
+import { Product } from "../models/product";
 
 export async function addProduct(product: Product) {
-  const existing = products.find(p => p.sku === product.sku);
-
-  if (existing) {
-    throw new Error("Produto já existe");
-  }
-
-  products.push(product);
+  await pool.query(
+    `INSERT INTO products (sku, name, stock_real, stock_virtual, vitrine_limit, cost)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     ON CONFLICT (sku) DO NOTHING`,
+    [
+      product.sku,
+      product.name,
+      product.stockReal,
+      product.stockVirtual,
+      product.vitrineLimit,
+      product.cost
+    ]
+  );
 }
 
 export async function getProducts(): Promise<Product[]> {
-  return products;
+  const result = await pool.query("SELECT * FROM products");
+
+  return result.rows.map(row => ({
+    sku: row.sku,
+    name: row.name,
+    stockReal: row.stock_real,
+    stockVirtual: row.stock_virtual,
+    vitrineLimit: row.vitrine_limit,
+    cost: Number(row.cost)
+  }));
 }
 
-export function decreaseStock(sku: string, quantity: number) {
-  const product = products.find(p => p.sku === sku);
+export async function decreaseStock(client: any, sku: string, quantity: number) {
+  const result = await client.query(
+    "SELECT * FROM products WHERE sku = $1 FOR UPDATE",
+    [sku]
+  );
 
-  if (!product) {
-    throw new Error(`Produto não encontrado: ${sku}`);
+  const product = result.rows[0];
+
+  if (!product) throw new Error(`Produto não encontrado: ${sku}`);
+
+  if (product.stock_real < quantity) {
+    throw new Error(`Estoque insuficiente: ${sku}`);
   }
 
-  if (product.stockReal < quantity) {
-    throw new Error(`Estoque insuficiente para ${sku}`);
-  }
+  const newStock = product.stock_real - quantity;
 
-   product.stockReal -= quantity;
+  const newVirtual =
+    newStock <= 0 ? 0 : product.vitrine_limit;
 
-   if (product.stockReal <= 0) {
-    product.stockVirtual = 0;
-  }
+  await client.query(
+    `UPDATE products
+     SET stock_real = $1, stock_virtual = $2
+     WHERE sku = $3`,
+    [newStock, newVirtual, sku]
+  );
 }

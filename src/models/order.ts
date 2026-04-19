@@ -9,5 +9,4 @@ export interface Order {
   marketplace: string;
   items: OrderItem[];
   total: number;
-  createdAt: Date;
 }

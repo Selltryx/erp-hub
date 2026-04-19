@@ -7,5 +7,4 @@ export interface Kit {
   sku: string;
   name: string;
   items: KitItem[];
-  stockVirtual: number;
 }
