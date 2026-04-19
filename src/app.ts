@@ -53,7 +53,7 @@ app.post("/order", (req, res) => {
 
 app.get("/order", (req, res) => {
   res.status(200).json({
-    message: "Use POST /order para enviar pedidos"
+    message: "Endpoint de pedidos ainda não implementado (use POST /order para criar pedidos)"
   });
 });
 
