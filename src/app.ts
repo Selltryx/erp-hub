@@ -51,6 +51,12 @@ app.post("/order", (req, res) => {
   res.json({ message: "Pedido processado" });
 });
 
+app.get("/order", (req, res) => {
+  res.status(200).json({
+    message: "Use POST /order para enviar pedidos"
+  });
+});
+
 app.post("/kit", (req, res) => {
   addKit(req.body);
   res.json({ message: "Kit cadastrado" });
